@@ -1,0 +1,38 @@
+body {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    font-family: Arial, sans-serif;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    border: 2px solid #333;
+    gap: 5px;
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border: 1px solid red;
+    cursor: pointer;
+}
+
+.square.selected {
+    outline: 3px solid yellow;
+}
+
+.white {
+    background-color: #eee;
+}
+
+.black {
+    background-color: #555;
+    color: white;
+}
+
