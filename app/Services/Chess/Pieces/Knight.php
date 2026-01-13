@@ -4,6 +4,12 @@ namespace App\Services\Chess\Pieces;
 
 class Knight extends Piece
 {
+    public function __construct(string $color)
+    {
+        // Chama o construtor do pai passando a cor e o tipo "knight"
+        parent::__construct($color, 'knight');
+    }
+
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
         // vai calcular a diferença absoluta entre as linhas e colunas

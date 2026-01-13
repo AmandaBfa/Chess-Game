@@ -4,6 +4,12 @@ namespace App\Services\Chess\Pieces;
 
 class Bishop extends Piece
 {
+    public function __construct(string $color)
+    {
+        // Chama o construtor do pai passando a cor e o tipo "bishop"
+        parent::__construct($color, 'bishop');
+    }
+
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
         if ($fromRow === $toRow && $fromCol === $toCol) {

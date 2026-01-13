@@ -4,6 +4,12 @@ namespace App\Services\Chess\Pieces;
 
 class King extends Piece
 {
+    public function __construct(string $color)
+    {
+        // Chama o construtor do pai passando a cor e o tipo "king"
+        parent::__construct($color, 'king');
+    }
+
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
         // evita movimentos nulos

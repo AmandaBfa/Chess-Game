@@ -4,6 +4,12 @@ namespace App\Services\Chess\Pieces;
 
 class Pawn extends Piece
 {
+    public function __construct(string $color)
+    {
+        // Chama o construtor do pai passando a cor e o tipo "pawn"
+        parent::__construct($color, 'pawn');
+    }
+
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
         $direction = $this->color === 'white' ? -1 : 1;

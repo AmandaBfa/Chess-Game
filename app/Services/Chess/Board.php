@@ -3,9 +3,12 @@
 // O tabuleiro de xadrez é representado por uma matriz 8x8
 namespace App\Services\Chess;
 
+use App\Services\Chess\Pieces\King;
 use App\Services\Chess\Pieces\Pawn;
 use App\Services\Chess\Pieces\Rook;
-use App\Services\Chess\Pieces\Piece;
+use App\Services\Chess\Pieces\Queen;
+use App\Services\Chess\Pieces\Bishop;
+use App\Services\Chess\Pieces\Knight;
 
 class Board
 {
@@ -33,23 +36,23 @@ class Board
         $this->squares[7][7] = new Rook('white');
 
         // cavalos 
-        $this->squares[0][1] = new Piece('knight', 'black');
-        $this->squares[0][6] = new Piece('knight', 'black');
-        $this->squares[7][1] = new Piece('knight', 'white');
-        $this->squares[7][6] = new Piece('knight', 'white');
+        $this->squares[0][1] = new Knight('black');
+        $this->squares[0][6] = new Knight('black');
+        $this->squares[7][1] = new Knight('white');
+        $this->squares[7][6] = new Knight('white');
 
         // bispos
-        $this->squares[0][2] = new Piece('bishop', 'black');
-        $this->squares[0][5] = new Piece('bishop', 'black');
-        $this->squares[7][2] = new Piece('bishop', 'white');
-        $this->squares[7][5] = new Piece('bishop', 'white');
+        $this->squares[0][2] = new Bishop('black');
+        $this->squares[0][5] = new Bishop('black');
+        $this->squares[7][2] = new Bishop('white');
+        $this->squares[7][5] = new Bishop('white');
 
         // rainha
-        $this->squares[0][3] = new Piece('queen', 'black');
-        $this->squares[7][3] = new Piece('queen', 'white');
+        $this->squares[0][3] = new Queen('black');
+        $this->squares[7][3] = new Queen('white');
 
         // rei
-        $this->squares[0][4] = new Piece('king', 'black');
-        $this->squares[7][4] = new Piece('king', 'white');
+        $this->squares[0][4] = new King('black');
+        $this->squares[7][4] = new King('white');
     }
 }
