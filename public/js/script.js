@@ -51,5 +51,6 @@ document.querySelectorAll('.square').forEach(square => {
             selected = null;
             window.location.reload();
         });
+
     });
 });

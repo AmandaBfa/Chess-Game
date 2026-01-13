@@ -2,25 +2,38 @@
 
 namespace App\Services\Chess;
 
-use Illuminate\Support\Facades\Log;
+use App\Services\Chess\Board;
 
 class ChessGame
 {
     public Board $board;  // pawn, rook, knight, bishop, queen, king
-    public string $turn = 'white';
+    public string $turn;
 
     public function __construct()
     {
         $this->board = new Board();
+        $this->turn = 'white';
     }
 
     public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
-        Log::info("Moving from $fromRow,$fromCol to $toRow,$toCol");
+        $piece = $this->board->squares[$fromRow][$fromCol] ?? null;
 
-        $piece = $this->board->squares[$fromRow][$fromCol];
+        if (!$piece) {
+            return false;
+        }
 
-        if (!$piece && $piece->color === $this->turn) {
+        if ($piece->color !== $this->turn) {
+            return false;
+        }
+
+        if (!$piece->canMove(
+            $this->board->squares,
+            $fromRow,
+            $fromCol,
+            $toRow,
+            $toCol
+        )) {
             return false;
         }
 

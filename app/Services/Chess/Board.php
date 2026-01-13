@@ -3,6 +3,10 @@
 // O tabuleiro de xadrez é representado por uma matriz 8x8
 namespace App\Services\Chess;
 
+use App\Services\Chess\Pieces\Pawn;
+use App\Services\Chess\Pieces\Rook;
+use App\Services\Chess\Pieces\Piece;
+
 class Board
 {
     public array $squares = [];
@@ -18,15 +22,15 @@ class Board
 
         // peôes
         for ($i = 0; $i < 8; $i++) {
-            $this->squares[1][$i] = new Piece('pawn', 'black');
-            $this->squares[6][$i] = new Piece('pawn', 'white');
+            $this->squares[1][$i] = new Pawn('black');
+            $this->squares[6][$i] = new Pawn('white');
         }
 
         // torres
-        $this->squares[0][0] = new Piece('rook', 'black');
-        $this->squares[0][7] = new Piece('rook', 'black');
-        $this->squares[7][0] = new Piece('rook', 'white');
-        $this->squares[7][7] = new Piece('rook', 'white');
+        $this->squares[0][0] = new Rook('black');
+        $this->squares[0][7] = new Rook('black');
+        $this->squares[7][0] = new Rook('white');
+        $this->squares[7][7] = new Rook('white');
 
         // cavalos 
         $this->squares[0][1] = new Piece('knight', 'black');

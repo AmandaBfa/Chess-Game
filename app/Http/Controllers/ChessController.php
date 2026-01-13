@@ -19,14 +19,13 @@ class ChessController extends Controller
         }
 
         return view('chess', [
-            'board' => $game->board->squares
+            'board' => $game->board->squares,
+            'turn' => $game->turn,
         ]);
     }
 
     public function move(Request $request)
     {
-        Log::info('MOVE REQUEST', $request->all());
-
         $game = session('game');
 
         if (!$game) {
