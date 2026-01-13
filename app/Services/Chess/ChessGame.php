@@ -2,6 +2,8 @@
 
 namespace App\Services\Chess;
 
+use Illuminate\Support\Facades\Log;
+
 class ChessGame
 {
     public Board $board;  // pawn, rook, knight, bishop, queen, king
@@ -14,6 +16,8 @@ class ChessGame
 
     public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
+        Log::info("Moving from $fromRow,$fromCol to $toRow,$toCol");
+
         $piece = $this->board->squares[$fromRow][$fromCol];
 
         if (!$piece && $piece->color === $this->turn) {

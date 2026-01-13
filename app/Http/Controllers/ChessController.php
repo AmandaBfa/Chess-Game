@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Chess\ChessGame;
 use Illuminate\Http\Request;
+use App\Services\Chess\ChessGame;
+use Illuminate\Support\Facades\Log;
 
 class ChessController extends Controller
 {
@@ -24,6 +25,8 @@ class ChessController extends Controller
 
     public function move(Request $request)
     {
+        Log::info('MOVE REQUEST', $request->all());
+
         $game = session('game');
 
         if (!$game) {
