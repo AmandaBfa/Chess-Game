@@ -1,21 +1,7 @@
 @php
     $icons = [
-        'white' => [
-            'pawn' => '♙',
-            'rook' => '♖',
-            'knight' => '♘',
-            'bishop' => '♗',
-            'queen' => '♕',
-            'king' => '♔',
-        ],
-        'black' => [
-            'pawn' => '♟',
-            'rook' => '♜',
-            'knight' => '♞',
-            'bishop' => '♝',
-            'queen' => '♛',
-            'king' => '♚',
-        ],
+        'white' => ['pawn' => '♙', 'rook' => '♖', 'knight' => '♘', 'bishop' => '♗', 'queen' => '♕', 'king' => '♔'],
+        'black' => ['pawn' => '♟', 'rook' => '♜', 'knight' => '♞', 'bishop' => '♝', 'queen' => '♛', 'king' => '♚'],
     ];
 @endphp
 
@@ -30,30 +16,33 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Game Chess</title>
+    <title>Chess Master</title>
 </head>
 
 <body>
-    <h1 style="color:rgb(138, 154, 241)">BLADE FUNCIONANDO</h1>
-    <h2>Turno: {{ ucfirst($turn) }}</h2>
+    <div class="game-area">
+        <div class="info">
+            <span id="turn-text">Turno: {{ ucfirst($turn) }}</span>
+            <div id="message"></div>
+            <button id="reset-btn" class="btn-reset">Novo Jogo</button>
+        </div>
 
-    <div class="board mt-4">
-        @foreach ($board as $rowIndex => $row)
-            @foreach ($row as $colIndex => $piece)
-                @php
-                    $color = ($rowIndex + $colIndex) % 2 === 0 ? 'white' : 'black';
-                @endphp
-
-                <div class="square {{ $color }}" data-row="{{ $rowIndex }}" data-col="{{ $colIndex }}">
-                    @if ($piece)
-                        {{ $icons[$piece->color][$piece->type] }}
-                    @endif
-                </div>
+        <div class="board">
+            @foreach ($board as $rowIndex => $row)
+                @foreach ($row as $colIndex => $piece)
+                    @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
+                    <div class="square {{ $colorClass }}" data-row="{{ $rowIndex }}"
+                        data-col="{{ $colIndex }}">
+                        @if ($piece)
+                            <span class="piece {{ $piece->color }}">
+                                {{ $icons[$piece->color][$piece->type] }}
+                            </span>
+                        @endif
+                    </div>
+                @endforeach
             @endforeach
-        @endforeach
+        </div>
     </div>
-
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 

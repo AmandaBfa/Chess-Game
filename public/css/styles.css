@@ -1,39 +1,82 @@
 body {
+    background-color: #fafafa;
     display: flex;
     justify-content: center;
-    margin-top: 50px;
-    font-family: Arial, sans-serif;
-    background-color: #555;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
 }
 
+.game-area { text-align: center; }
+
+.info {
+    margin-bottom: 15px;
+    min-height: 60px; /* Garante que o espaço sempre exista */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#message {
+    font-weight: bold;
+    margin-top: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Quando for erro */
+.error-msg { color: #e74c3c; }
+
+/* Quando for VITÓRIA (Mais bonitão) */
+.victory-msg {
+    color: #ffffff;
+    background-color: #27ae60; /* Verde */
+    border: 2px solid #2ecc71;
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-size: 1.1em;
+}
+
+.error-msg { color: #e74c3c; font-size: 14px; margin-top: 5px; }
+
+/* O Tabuleiro */
 .board {
     display: grid;
     grid-template-columns: repeat(8, 60px);
     border: 2px solid #333;
-    gap: 5px;
 }
 
 .square {
     width: 60px;
     height: 60px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 28px;
-    border: 1px solid red;
+    align-items: center;
+    font-size: 35px;
     cursor: pointer;
 }
 
-.square.selected {
-    outline: 3px solid yellow;
-}
+/* Cores das casas */
+.light { background-color: #f0f0f0; }
+.dark { background-color: #d1d1d1; }
 
-.white {
-    background-color: #eee;
-}
+/* Seleção */
+.square.selected { background-color: #add8e6 !important; } /* Azul bebê */
 
-.black {
-    background-color: #555;
+/* Cores das Peças (opcional se quiser diferenciar mais) */
+.piece.black { color: #000; }
+.piece.white { color: #555; }
+
+.btn-reset {
+    margin-top: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+    background: #3498db;
     color: white;
+    border: none;
+    border-radius: 3px;
 }
-
+.btn-reset:hover { background: #2980b9; }

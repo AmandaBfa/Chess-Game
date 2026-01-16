@@ -47,9 +47,6 @@ class ChessController extends Controller
             ], 400);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => $result['message'],
-        ]);
+        return response()->json($result);
     }
 }
