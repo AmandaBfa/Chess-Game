@@ -15,17 +15,18 @@ class ChessGame
         $this->turn = 'white';
     }
 
-    public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): bool
+    public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): array
     {
         $piece = $this->board->squares[$fromRow][$fromCol] ?? null;
 
         if (!$piece) {
-            return false;
-        }
+            return ['success' => false, 'message' => 'Não existe nenhuma peça nessa posição.'];
+        } // evita erro de tentar mover uma peça que nao existe
 
         if ($piece->color !== $this->turn) {
-            return false;
-        }
+            $cor = $this->turn === 'white' ? 'Branca' : 'Preta';
+            return ['success' => false, 'message' => "É a vez da peça $cor jogar."];
+        } // evita que jogue fora da vez
 
         if (!$piece->canMove(
             $this->board->squares,
@@ -34,16 +35,16 @@ class ChessGame
             $toRow,
             $toCol
         )) {
-            return false;
-        }
+            return ['success' => false, 'message' => 'Movimento inválido para essa peça.'];
+        } // valida se a peça pode se mover daquela forma
 
         // validação dos movimentos sera feita depois
 
         $this->board->squares[$toRow][$toCol] = $piece;
         $this->board->squares[$fromRow][$fromCol] = null;
 
-        $this->turn = $this->turn === 'white' ? 'black' : 'white';
+        $this->turn = $this->turn === 'white' ? 'black' : 'white'; // troca o turno
 
-        return true;
+        return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
     }
 }

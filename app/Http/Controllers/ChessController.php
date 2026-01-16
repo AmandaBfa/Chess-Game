@@ -32,7 +32,7 @@ class ChessController extends Controller
             return response()->json(['error' => 'Game not found'], 400);
         }
 
-        $game->move(
+        $result = $game->move(
             (int) $request->from_row,
             (int) $request->from_col,
             (int) $request->to_row,
@@ -41,6 +41,15 @@ class ChessController extends Controller
 
         session(['game' => $game]);
 
-        return response()->json(['ok' => true]);
+        if (!$result['success']) {
+            return response()->json([
+                'error' => $result['message']
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $result['message'],
+        ]);
     }
 }
