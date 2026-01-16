@@ -13,7 +13,7 @@ class King extends Piece
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
         // evita movimentos nulos
-        if ($fromRow === $toRow && $fromCol === $toCol) {
+        if ($this->isNullMove($fromRow, $fromCol, $toRow, $toCol)) {
             return false;
         }
 
@@ -22,14 +22,14 @@ class King extends Piece
         $colDiff = abs($fromCol - $toCol);
 
         // validação do movimento do rei, que pode andar apenas uma casa em qualquer direção
+        // rei pode se matar - tem que verificar se a casa esta em ataque
         if (!($rowDiff <= 1 && $colDiff <= 1)) {
             return false;
         }
 
         // verifica a cor do destino, se for a mesma cor, nao pode mover
         $target = $board[$toRow][$toCol] ?? null;
-
-        if ($target && $target->color === $this->color) {
+        if ($this->isSameColor($target)) {
             return false;
         }
 

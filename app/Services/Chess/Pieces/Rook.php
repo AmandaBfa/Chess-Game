@@ -37,12 +37,12 @@ class Rook extends Piece
 
         // quando o while terminar, quer dizer que o caminho estava livre, agora verificar o destino(para onde a torre vai ficar)...
 
-        $target = $board[$toRow][$toCol] ?? null;
-
         // se tiver peça do mesmo cor no destino -- se for a mesma cor, nao pode pular em cima (capturar) e se for diferente, pode capturar
-        if ($target && $target->color === $this->color) {
+        $target = $board[$toRow][$toCol] ?? null;
+        if ($this->isSameColor($target)) {
             return false;
         }
+
         return true;
     }
 }

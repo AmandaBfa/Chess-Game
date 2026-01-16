@@ -12,6 +12,10 @@ class Knight extends Piece
 
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
+        if ($this->isNullMove($fromRow, $fromCol, $toRow, $toCol)) {
+            return false;
+        } // so para padronizar, ja que a matematica do cavalo nao permite movimento nulo
+
         // vai calcular a diferença absoluta entre as linhas e colunas
         $rowDiff = abs($fromRow - $toRow);
         $colDiff = abs($fromCol - $toCol);
@@ -24,9 +28,8 @@ class Knight extends Piece
         // como o cavalo pode pular sobre outras peças, não precisamos verificar o caminho, so verificar o destino
 
         // verifica a cor do destino, se for a mesma cor, nao pode mover
-        $target = $board[$toRow][$toCol] ?? null; // target = alvo
-
-        if ($target && $target->color === $this->color) {
+        $target = $board[$toRow][$toCol] ?? null;
+        if ($this->isSameColor($target)) {
             return false;
         }
 

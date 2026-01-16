@@ -12,6 +12,10 @@ class Pawn extends Piece
 
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
+        if ($this->isNullMove($fromRow, $fromCol, $toRow, $toCol)) {
+            return false;
+        }
+
         $direction = $this->color === 'white' ? -1 : 1;
         $startRow  = $this->color === 'white' ? 6 : 1;
 
@@ -38,7 +42,7 @@ class Pawn extends Piece
             abs($fromCol - $toCol) === 1 &&
             $toRow === $fromRow + $direction &&
             $target &&
-            $target->color !== $this->color
+            !$this->isSameColor($target)
         ) {
             return true;
         }

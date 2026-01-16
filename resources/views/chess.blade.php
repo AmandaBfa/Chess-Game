@@ -35,7 +35,7 @@
 </head>
 
 <body>
-    <h1 style="color:red">BLADE FUNCIONANDO</h1>
+    <h1 style="color:rgb(138, 154, 241)">BLADE FUNCIONANDO</h1>
     <h2>Turno: {{ ucfirst($turn) }}</h2>
 
     <div class="board mt-4">

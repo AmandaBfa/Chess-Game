@@ -15,5 +15,16 @@ abstract class Piece
         $this->type = $type;
     }
 
+    // esse ? antes do Piece indica que o parametro pode ser nulo
+    public function isSameColor(?Piece $target): bool
+    {
+        return $target && $target->color === $this->color;
+    }
+
+    public function isNullMove(int $fromCol, int $fromRow, int $toCol, int $toRow): bool
+    {
+        return $fromCol === $toCol && $fromRow === $toRow;
+    }
+
     abstract public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool;
 }

@@ -12,9 +12,9 @@ class Queen extends Piece
 
     public function canMove(array $board, int $fromRow, int $fromCol, int $toRow, int $toCol): bool
     {
-        if ($fromRow === $toRow && $fromCol === $toCol) {
+        if ($this->isNullMove($fromRow, $fromCol, $toRow, $toCol)) {
             return false;
-        } // so para evitar movimentos nulos
+        }
 
         $isStraight = ($fromRow === $toRow || $fromCol === $toCol);
         $isDiagonal = abs($fromRow - $toRow) === abs($fromCol - $toCol); // regra matemática da diagonal
@@ -38,10 +38,10 @@ class Queen extends Piece
         }
 
         $target = $board[$toRow][$toCol] ?? null;
-
-        if ($target && $target->color === $this->color) {
+        if ($this->isSameColor($target)) {
             return false;
         }
+
         return true;
     }
 }
