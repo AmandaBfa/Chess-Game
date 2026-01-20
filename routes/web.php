@@ -6,3 +6,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/chess', [ChessController::class, 'index']);
 Route::post('/chess/move', [ChessController::class, 'move']);
 Route::post('/chess/reset', [ChessController::class, 'reset']);
+Route::post('/chess/valid-moves', [ChessController::class, 'getValidMoves']);

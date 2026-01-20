@@ -67,4 +67,27 @@ class ChessGame
 
         return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
     }
+
+    public function getValidaMoves(int $row, int $col): array
+    {
+        $piece = $this->board->squares[$row][$col] ?? null; // para localizar a peça na posição
+
+        if (!$piece) {
+            // validação: se nao tiver peça na posição, retorna array vazio
+            return [];
+        }
+
+        $validMoves = []; // array para armazenar os movimentos válidos
+
+        for ($toRow = 0; $toRow < 8; $toRow++) {
+            for ($toCol = 0; $toCol < 8; $toCol++) {
+                // chama o metodo que criou em cada peça. passa pelo tabuleiro, posição inicial e final
+                if ($piece->canMove($this->board->squares, $row, $col, $toRow, $toCol)) {
+                    $validMoves[] = ['row' => $toRow, 'col' => $toCol]; // se for true, guarda a posição
+                }
+            }
+        }
+
+        return $validMoves;
+    }
 }

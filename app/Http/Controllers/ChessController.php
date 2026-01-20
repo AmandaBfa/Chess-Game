@@ -55,4 +55,19 @@ class ChessController extends Controller
         session()->forget('game');
         return response()->json(['success' => true]);
     }
+
+    public function getValidMoves(Request $request)
+    {
+        $game = session('game');
+
+        // pegar as coordenadas que vem da requisição
+        $row = (int) $request->row;
+        $col = (int) $request->col;
+
+        // pega os movimentos validos do jogo
+        $validMoves = $game->getValidMoves($row, $col);
+
+        // retorna o JSON
+        return response()->json($validMoves);
+    }
 }
