@@ -1,5 +1,6 @@
 body {
-    background-color: #fafafa;
+    background-color: #121212; /* Preto grafite */
+    color: #e0e0e0; /* Cinza claro */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,7 +31,7 @@ body {
 /* Quando for erro */
 .error-msg { color: #e74c3c; }
 
-/* Quando for VITÓRIA (Mais bonitão) */
+/* Quando for VITÓRIA */
 .victory-msg {
     color: #ffffff;
     background-color: #27ae60; /* Verde */

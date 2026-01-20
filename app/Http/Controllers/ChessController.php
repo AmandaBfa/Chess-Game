@@ -49,4 +49,10 @@ class ChessController extends Controller
 
         return response()->json($result);
     }
+
+    public function reset()
+    {
+        session()->forget('game');
+        return response()->json(['success' => true]);
+    }
 }

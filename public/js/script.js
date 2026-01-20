@@ -77,3 +77,14 @@ document.querySelectorAll('.square').forEach(square => {
         });
     });
 });
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+    fetch('/chess/reset', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        window.location.reload(); // Recarrega a página com o tabuleiro limpo
+    });
+});
