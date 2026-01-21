@@ -20,29 +20,47 @@
 </head>
 
 <body>
-    <div class="game-area">
-        <div class="info">
-            <span id="turn-text">Turno: {{ ucfirst($turn) }}</span>
-            <div id="message"></div>
-            <button id="reset-btn" class="btn-reset">Novo Jogo</button>
-        </div>
 
-        <div class="board">
-            @foreach ($board as $rowIndex => $row)
-                @foreach ($row as $colIndex => $piece)
-                    @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
-                    <div class="square {{ $colorClass }}" data-row="{{ $rowIndex }}"
-                        data-col="{{ $colIndex }}">
-                        @if ($piece)
-                            <span class="piece {{ $piece->color }}">
-                                {{ $icons[$piece->color][$piece->type] }}
-                            </span>
-                        @endif
-                    </div>
-                @endforeach
+    <div class="game-container">
+        <div class="graveyard black-graveyard">
+            @foreach ($capturedBlack as $type)
+                <span class="captured-piece">{{ $icons['black'][$type] }}</span>
             @endforeach
         </div>
+
+
+        <div class="game-area">
+            <div class="info">
+                <span id="turn-text">Turno: {{ ucfirst($turn) }}</span>
+                <div id="message"></div>
+                <button id="reset-btn" class="btn-reset">Novo Jogo</button>
+            </div>
+
+            <div class="board">
+                @foreach ($board as $rowIndex => $row)
+                    @foreach ($row as $colIndex => $piece)
+                        @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
+                        <div class="square {{ $colorClass }}" data-row="{{ $rowIndex }}"
+                            data-col="{{ $colIndex }}">
+                            @if ($piece)
+                                <span class="piece {{ $piece->color }}">
+                                    {{ $icons[$piece->color][$piece->type] }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                @endforeach
+            </div>
+        </div>
+
+        <div class="graveyard white-graveyard">
+            @foreach ($capturedWhite as $type)
+                <span class="captured-piece">{{ $icons['white'][$type] }}</span>
+            @endforeach
+        </div>
+
     </div>
+
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 

@@ -21,6 +21,8 @@ class ChessController extends Controller
         return view('chess', [
             'board' => $game->board->squares,
             'turn' => $game->turn,
+            'capturedWhite' => $game->capturedWhite,
+            'capturedBlack' => $game->capturedBlack,
         ]);
     }
 

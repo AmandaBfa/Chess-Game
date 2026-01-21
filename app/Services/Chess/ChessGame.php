@@ -8,6 +8,8 @@ class ChessGame
 {
     public Board $board;  // pawn, rook, knight, bishop, queen, king
     public string $turn;
+    public array $capturedWhite = [];
+    public array $capturedBlack = [];
 
     public function __construct()
     {
@@ -38,6 +40,14 @@ class ChessGame
         )) {
             return ['success' => false, 'message' => 'Movimento inválido para essa peça.'];
         } // valida se a peça pode se mover daquela forma
+
+        if ($target) {
+            if ($target->color === 'white') {
+                $this->capturedWhite[] = $target->type;
+            } else {
+                $this->capturedBlack[] = $target->type;
+            }
+        } // captura a peça se houver uma peça inimiga no destino
 
         // logica da vitoria
         $gameOver = false;

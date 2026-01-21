@@ -100,3 +100,34 @@ body {
     top: 5px;
     left: 5px;
 }
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.graveyard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    width: 480px; /* Largura do tabuleiro */
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.captured-piece {
+    font-size: 24px;
+    margin: 2px 4px;
+    opacity: 0.8;
+}
+
+/* para as peças brilharem menos */
+.white-graveyard .captured-piece { color: #d6d5d5; }
+.black-graveyard .captured-piece { color: #d6d5d5; }
