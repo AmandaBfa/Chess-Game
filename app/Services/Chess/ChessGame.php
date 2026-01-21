@@ -68,7 +68,8 @@ class ChessGame
         return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
     }
 
-    public function getValidaMoves(int $row, int $col): array
+    // funcao para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
+    public function getValidMoves(int $row, int $col): array
     {
         $piece = $this->board->squares[$row][$col] ?? null; // para localizar a peça na posição
 

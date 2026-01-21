@@ -56,18 +56,24 @@ class ChessController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Função para obter os movimentos válidos de uma peça -- vai mostrar os quadrados possiveis
     public function getValidMoves(Request $request)
     {
         $game = session('game');
 
-        // pegar as coordenadas que vem da requisição
+        if (!$game) {
+            $game = new ChessGame();
+            session(['game' => $game]);
+        }
+
+        // PEGA as coordenadas que vem da requisição
         $row = (int) $request->row;
         $col = (int) $request->col;
 
-        // pega os movimentos validos do jogo
+        // PROCESSA os movimentos validos do jogo
         $validMoves = $game->getValidMoves($row, $col);
 
-        // retorna o JSON
+        // RETORNA o JSON
         return response()->json($validMoves);
     }
 }

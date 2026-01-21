@@ -81,3 +81,22 @@ body {
     border-radius: 3px;
 }
 .btn-reset:hover { background: #2980b9; }
+
+/* vai mostrar o proximo movimento */
+.square.valid-move {
+    position: relative;
+    box-shadow: inset 0 0 12px rgba(52, 152, 219, 0.4);
+    transition: background-color 0.2s;
+}
+
+/* Um pequeno triângulo ou marca nos cantos (opcional e muito sutil) */
+.square.valid-move::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+    top: 5px;
+    left: 5px;
+}
