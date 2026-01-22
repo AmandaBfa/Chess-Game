@@ -36,20 +36,37 @@
                 <button id="reset-btn" class="btn-reset">Novo Jogo</button>
             </div>
 
-            <div class="board">
-                @foreach ($board as $rowIndex => $row)
-                    @foreach ($row as $colIndex => $piece)
-                        @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
-                        <div class="square {{ $colorClass }}" data-row="{{ $rowIndex }}"
-                            data-col="{{ $colIndex }}">
-                            @if ($piece)
-                                <span class="piece {{ $piece->color }}">
-                                    {{ $icons[$piece->color][$piece->type] }}
-                                </span>
-                            @endif
-                        </div>
+            <div class="mainPlayArea">
+                <div class="board">
+                    @foreach ($board as $rowIndex => $row)
+                        @foreach ($row as $colIndex => $piece)
+                            @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
+                            <div class="square {{ $colorClass }}" data-row="{{ $rowIndex }}"
+                                data-col="{{ $colIndex }}">
+                                @if ($piece)
+                                    <span class="piece {{ $piece->color }}">
+                                        {{ $icons[$piece->color][$piece->type] }}
+                                    </span>
+                                @endif
+                            </div>
+                        @endforeach
                     @endforeach
-                @endforeach
+                </div>
+
+                <div class="sidebar">
+                    <h3>Histórico de Jogadas</h3>
+                    <div class="history-container">
+                        @if (empty($moveHistory))
+                            <p>Nenhum movimento ainda.</p>
+                        @else
+                            <ul>
+                                @foreach ($moveHistory as $index => $move)
+                                    <li><strong>{{ $index + 1 }}.</strong> {{ $move }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -60,6 +77,23 @@
         </div>
 
     </div>
+
+    {{-- <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">🏆 Fim de Jogo!</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <h2 id="winner-message"></h2>
+                    <p>O Rei foi capturado!</p>
+                </div>
+                <div class="modal-footer border-secondary justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="location.reload()">Jogar Novamente</button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
 
     <script src="{{ asset('js/script.js') }}"></script>
 </body>

@@ -23,6 +23,7 @@ class ChessController extends Controller
             'turn' => $game->turn,
             'capturedWhite' => $game->capturedWhite,
             'capturedBlack' => $game->capturedBlack,
+            'moveHistory' => $game->moveHistory,
         ]);
     }
 

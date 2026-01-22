@@ -47,7 +47,8 @@ body {
 .board {
     display: grid;
     grid-template-columns: repeat(8, 60px);
-    border: 2px solid #333;
+    grid-template-rows: repeat(8, 60px);
+    border: 5px solid #333;
 }
 
 .square {
@@ -131,3 +132,39 @@ body {
 /* para as peças brilharem menos */
 .white-graveyard .captured-piece { color: #d6d5d5; }
 .black-graveyard .captured-piece { color: #d6d5d5; }
+
+.mainPlayArea {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.sidebar {
+    width: 300px;
+    background: #2c2c2c;
+    border-radius: 8px;
+    border: 1px solid #444;
+    height: 480px;       
+    display: flex;
+    flex-direction: column;
+}
+
+.history-container {
+    flex-grow: 1;
+    overflow-y: auto;         /* Cria barra de rolagem se a lista for grande */
+    margin-top: 10px;
+}
+
+.history-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.history-container li {
+    padding: 5px 0;
+    border-bottom: 1px solid #444;
+    font-size: 0.9em;
+}

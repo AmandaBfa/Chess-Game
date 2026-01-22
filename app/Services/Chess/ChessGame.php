@@ -10,6 +10,7 @@ class ChessGame
     public string $turn;
     public array $capturedWhite = [];
     public array $capturedBlack = [];
+    public array $moveHistory = [];
 
     public function __construct()
     {
@@ -22,55 +23,50 @@ class ChessGame
         $piece = $this->board->squares[$fromRow][$fromCol] ?? null;
         $target = $this->board->squares[$toRow][$toCol] ?? null;
 
-        if (!$piece) {
-            return ['success' => false, 'message' => 'Não existe nenhuma peça nessa posição.'];
-        } // evita erro de tentar mover uma peça que nao existe
+        // 1. Validações Iniciais
+        if (!$piece) return ['success' => false, 'message' => 'Posição vazia.'];
+        if ($piece->color !== $this->turn) return ['success' => false, 'message' => 'Não é sua vez.'];
+        if (!$piece->canMove($this->board->squares, $fromRow, $fromCol, $toRow, $toCol)) {
+            return ['success' => false, 'message' => 'Movimento inválido.'];
+        }
 
-        if ($piece->color !== $this->turn) {
-            $cor = $this->turn === 'white' ? 'Branca' : 'Preta';
-            return ['success' => false, 'message' => "É a vez da peça $cor jogar."];
-        } // evita que jogue fora da vez
-
-        if (!$piece->canMove(
-            $this->board->squares,
-            $fromRow,
-            $fromCol,
-            $toRow,
-            $toCol
-        )) {
-            return ['success' => false, 'message' => 'Movimento inválido para essa peça.'];
-        } // valida se a peça pode se mover daquela forma
+        // 2. Lógica de Captura e Fim de Jogo (Rei)
+        $gameOver = false;
+        $winner = null;
 
         if ($target) {
+            // Registra no cemitério
             if ($target->color === 'white') {
                 $this->capturedWhite[] = $target->type;
             } else {
                 $this->capturedBlack[] = $target->type;
             }
-        } // captura a peça se houver uma peça inimiga no destino
 
-        // logica da vitoria
-        $gameOver = false;
-        $winner = null;
-
-        if ($target && $target->type === 'king') {
-            $gameOver = true;
-            $winner = $piece->color === 'white' ? 'Branco' : 'Preto';
-        }
-
-        $this->board->squares[$toRow][$toCol] = $piece;
-        $this->board->squares[$fromRow][$fromCol] = null;
-
-        // logica de promoção
-        if ($piece->type === 'pawn') {
-            // se for branco e chegar na ultima linha e se for preto e chegar na primeira linha
-            if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {
-                // promove para rainha
-                $this->board->squares[$toRow][$toCol] = new \App\Services\Chess\Pieces\Queen($piece->color);
+            // Verifica se o jogo acabou (captura do rei)
+            if ($target->type === 'king') {
+                $gameOver = true;
+                $winner = ($piece->color === 'white') ? 'Branco' : 'Preto';
             }
         }
 
-        // logica de fim de jogo
+        // 3. Registro no Histórico
+        $corNome = ($this->turn === 'white') ? 'Branco' : 'Preto';
+        $pecaNome = ucfirst($piece->type);
+        $this->moveHistory[] = "{$corNome} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
+
+        // 4. Execução do Movimento
+        $this->board->squares[$toRow][$toCol] = $piece;
+        $this->board->squares[$fromRow][$fromCol] = null;
+
+        // 5. Lógica de Promoção (Peão)
+        if ($piece->type === 'pawn') {
+            if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {
+                $this->board->squares[$toRow][$toCol] = new \App\Services\Chess\Pieces\Queen($piece->color);
+                $this->moveHistory[count($this->moveHistory) - 1] .= " (Promovido a Rainha!)";
+            }
+        }
+
+        // 6. Retorno de Vitória ou Troca de Turno
         if ($gameOver) {
             return [
                 'success' => true,
@@ -80,8 +76,7 @@ class ChessGame
             ];
         }
 
-        // vai trocar o turno se o jogo nao tiver acabado
-        $this->turn = $this->turn === 'white' ? 'black' : 'white'; // troca o turno
+        $this->turn = ($this->turn === 'white') ? 'black' : 'white';
 
         return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
     }
