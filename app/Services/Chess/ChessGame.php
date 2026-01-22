@@ -63,6 +63,16 @@ class ChessGame
         $this->board->squares[$toRow][$toCol] = $piece;
         $this->board->squares[$fromRow][$fromCol] = null;
 
+        // logica de promoção
+        if ($piece->type === 'pawn') {
+            // se for branco e chegar na ultima linha e se for preto e chegar na primeira linha
+            if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {
+                // promove para rainha
+                $this->board->squares[$toRow][$toCol] = new \App\Services\Chess\Pieces\Queen($piece->color);
+            }
+        }
+
+        // logica de fim de jogo
         if ($gameOver) {
             return [
                 'success' => true,

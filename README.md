@@ -15,7 +15,7 @@ Este é um jogo de xadrez funcional desenvolvido com Laravel 11 e JavaScript pur
 
 ## Tecnologias
 
--   PHP 8.x / Laravel 11
--   JavaScript (Fetch API / DOM)
--   CSS3 (Flexbox/Grid)
+-   PHP / Laravel
+-   JavaScript
+-   CSS3
 -   Blade Templates
