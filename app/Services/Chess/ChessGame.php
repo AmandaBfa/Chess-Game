@@ -58,8 +58,6 @@ class ChessGame
             $winner = $piece->color === 'white' ? 'Branco' : 'Preto';
         }
 
-        // validação dos movimentos sera feita depois
-
         $this->board->squares[$toRow][$toCol] = $piece;
         $this->board->squares[$fromRow][$fromCol] = null;
 
