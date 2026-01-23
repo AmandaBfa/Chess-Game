@@ -10,6 +10,13 @@ function clearHighlights() {
 
 document.querySelectorAll('.square').forEach(square => {
     square.addEventListener('click', () => {
+
+        // Se houver uma mensagem de vitória na tela, não faz nada
+        if (document.getElementById('message').classList.contains('victory-msg')) {
+            console.log("Tabuleiro congelado para análise.");
+            return; 
+        }
+
         const piece = square.querySelector('.piece');
         
         // 1. PEGAR O TURNO (Mais seguro agora)
@@ -73,11 +80,22 @@ document.querySelectorAll('.square').forEach(square => {
                     // se o jogo acabou
                     if (data.game_over) {
                         console.log("VITÓRIA DETECTADA!");
+                    
+                        // 1. CORREÇÃO: document (com 'd') para congelar o tabuleiro
+                        const boardElement = document.querySelector('.board');
+                        if (boardElement) boardElement.classList.add('frozen');
+                    
+                        // 2. MENSAGEM PERSISTENTE: Para aparecer na div fixa enquanto analisa
+                        messageDiv.textContent = data.message;
+                        messageDiv.classList.add('victory-msg');
+                    
+                        // 3. MODAL
                         document.getElementById('winner-message').innerText = `Vencedor: ${data.winner}`;
                         const modalElement = document.getElementById('gameOverModal');
                         const gameOverModal = new bootstrap.Modal(modalElement);
                         gameOverModal.show();
-                        return;
+                        
+                        return; // Para o fluxo aqui para não dar reload
                     }
                     window.location.reload();
                 }
@@ -108,9 +126,23 @@ function fetchValidMoves(square) {
 }
 
 // Botão Reset
-document.getElementById('reset-btn').addEventListener('click', () => {
+function resetGame() {
     fetch('/chess/reset', {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-    }).then(() => window.location.reload());
-});
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        }
+    })
+    .catch(err => console.error("Erro ao resetar:", err));
+}
+
+const mainResetBtn = document.getElementById('reset-btn');
+if (mainResetBtn) {
+    mainResetBtn.addEventListener('click', resetGame);
+}

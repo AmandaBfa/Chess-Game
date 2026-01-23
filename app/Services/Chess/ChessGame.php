@@ -6,11 +6,14 @@ use App\Services\Chess\Board;
 
 class ChessGame
 {
+    // aqui dentro é onde vai ter a lógica do jogo, feita pelo php
+
     public Board $board;  // pawn, rook, knight, bishop, queen, king
     public string $turn;
     public array $capturedWhite = [];
     public array $capturedBlack = [];
     public array $moveHistory = [];
+    public bool $isFinished = false; // indica se o jogo acabou
 
     public function __construct()
     {
@@ -20,6 +23,15 @@ class ChessGame
 
     public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): array
     {
+        // trava de segurança -- se o jogo já acabou, não deixa mover mais
+        if ($this->isFinished) {
+            return [
+                'success' => false,
+                'message' => 'A partida acabou. Clique em "Novo Jogo" para reiniciar.'
+            ];
+        }
+
+        // Obtém a peça na posição inicial e o alvo na posição final
         $piece = $this->board->squares[$fromRow][$fromCol] ?? null;
         $target = $this->board->squares[$toRow][$toCol] ?? null;
 
@@ -35,8 +47,9 @@ class ChessGame
         $winner = null;
 
         if ($target) {
-
+            // Log de captura
             \Illuminate\Support\Facades\Log::info("Peça capturada: " . $target->type . " Cor: " . $target->color);
+
             // Registra no cemitério
             if ($target->color === 'white') {
                 $this->capturedWhite[] = $target->type;
@@ -47,13 +60,14 @@ class ChessGame
             // Verifica se o jogo acabou (captura do rei)
             if ($target->type === 'king') {
                 $gameOver = true;
+                $this->isFinished = true;
                 $winner = ($piece->color === 'white') ? 'Branco' : 'Preto';
             }
         }
 
         // 3. Registro no Histórico
         $corNome = ($this->turn === 'white') ? 'Branco' : 'Preto';
-        $pecaNome = ucfirst($piece->type);
+        $pecaNome = ucfirst($piece->type); // ucfirst para deixar a primeira letra maiuscula
         $this->moveHistory[] = "{$corNome} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
 
         // 4. Execução do Movimento
@@ -78,14 +92,20 @@ class ChessGame
             ];
         }
 
+        // Troca de turno
         $this->turn = ($this->turn === 'white') ? 'black' : 'white';
 
         return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
     }
 
-    // funcao para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
+    // Função para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
     public function getValidMoves(int $row, int $col): array
     {
+        // trava de segurança 
+        if ($this->isFinished) {
+            return [];
+        }
+
         $piece = $this->board->squares[$row][$col] ?? null; // para localizar a peça na posição
 
         if (!$piece) {

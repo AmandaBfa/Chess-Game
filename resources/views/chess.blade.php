@@ -33,11 +33,12 @@
             <div class="info text-center mb-3">
                 <span id="turn-text" class="badge bg-secondary p-2">Turno: {{ ucfirst($turn) }}</span>
                 <div id="message" class="mt-2"></div>
-                <button id="reset-btn" class="btn btn-outline-danger btn-sm mt-2">Novo Jogo</button>
+                <button id="button" onclick="resetGame()" class="btn btn-outline-danger btn-sm mt-2">Novo
+                    Jogo</button>
             </div>
 
             <div class="main-play-container">
-                <div class="board">
+                <div class="board {{ $isFinished ? 'frozen' : '' }}">
                     @foreach ($board as $rowIndex => $row)
                         @foreach ($row as $colIndex => $piece)
                             @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
@@ -90,7 +91,10 @@
                     <p>O Rei foi capturado com sucesso!</p>
                 </div>
                 <div class="modal-footer border-secondary justify-content-center">
-                    <button type="button" class="btn btn-primary" onclick="location.reload()">Jogar Novamente</button>
+                    <button type="button" class="btn btn-primary" onclick="resetGame()">Novo Jogo</button>
+
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Analisar
+                        Partida</button>
                 </div>
             </div>
         </div>
