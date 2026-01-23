@@ -46,13 +46,13 @@ document.querySelectorAll('.square').forEach(square => {
             }
 
             const moveData = {
-                from_row: selected.dataset.row,
-                from_col: selected.dataset.col,
-                to_row: square.dataset.row,
-                to_col: square.dataset.col
+                fromRow: selected.dataset.row,
+                fromCol: selected.dataset.col,
+                toRow: square.dataset.row,
+                toCol: square.dataset.col
             };
 
-            console.log("Tentando mover para:", moveData.to_row, moveData.to_col);
+            console.log("Tentando mover para:", moveData.toRow, moveData.toCol);
 
             fetch('/chess/move', {
                 method: 'POST',
@@ -70,10 +70,12 @@ document.querySelectorAll('.square').forEach(square => {
                     clearHighlights();
                     selected = null;
                 } else {
+                    // se o jogo acabou
                     if (data.game_over) {
-                        messageDiv.innerHTML = `<strong>${data.message}</strong>`;
-                        messageDiv.classList.add('victory-msg');
-                        document.querySelector('.board').style.pointerEvents = 'none';
+                        document.getElementById('winner-message').innerText = `Vencedor: ${data.winner}`;
+                        const modalElement = document.getElementById('gameOverModal');
+                        const gameOverModal = new bootstrap.Modal(modalElement);
+                        gameOverModal.show();
                         return;
                     }
                     window.location.reload();

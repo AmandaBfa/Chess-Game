@@ -2,14 +2,20 @@ body {
     background-color: #121212; /* Preto grafite */
     color: #e0e0e0; /* Cinza claro */
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 40px 0;
     font-family: sans-serif;
 }
 
-.game-area { text-align: center; }
+.game-area {
+    text-align: center;
+    width: 100%;
+    max-width: 1000px; 
+}
 
 .info {
     margin-bottom: 15px;
@@ -133,13 +139,14 @@ body {
 .white-graveyard .captured-piece { color: #d6d5d5; }
 .black-graveyard .captured-piece { color: #d6d5d5; }
 
-.mainPlayArea {
+.main-play-container {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     gap: 30px;
     justify-content: center;
     margin-top: 20px;
+    width: auto;
 }
 
 .sidebar {
@@ -147,9 +154,10 @@ body {
     background: #2c2c2c;
     border-radius: 8px;
     border: 1px solid #444;
-    height: 480px;       
+    height: 485px;       
     display: flex;
     flex-direction: column;
+    padding: 15px;
 }
 
 .history-container {

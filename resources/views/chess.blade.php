@@ -30,13 +30,13 @@
 
 
         <div class="game-area">
-            <div class="info">
-                <span id="turn-text">Turno: {{ ucfirst($turn) }}</span>
-                <div id="message"></div>
-                <button id="reset-btn" class="btn-reset">Novo Jogo</button>
+            <div class="info text-center mb-3">
+                <span id="turn-text" class="badge bg-secondary p-2">Turno: {{ ucfirst($turn) }}</span>
+                <div id="message" class="mt-2"></div>
+                <button id="reset-btn" class="btn btn-outline-danger btn-sm mt-2">Novo Jogo</button>
             </div>
 
-            <div class="mainPlayArea">
+            <div class="main-play-container">
                 <div class="board">
                     @foreach ($board as $rowIndex => $row)
                         @foreach ($row as $colIndex => $piece)
@@ -54,14 +54,15 @@
                 </div>
 
                 <div class="sidebar">
-                    <h3>Histórico de Jogadas</h3>
+                    <h5 class="text-center border-bottom pb-2">Histórico</h5>
                     <div class="history-container">
                         @if (empty($moveHistory))
-                            <p>Nenhum movimento ainda.</p>
+                            <p class="text-muted text-center">Aguardando jogadas...</p>
                         @else
-                            <ul>
+                            <ul class="list-unstyled">
                                 @foreach ($moveHistory as $index => $move)
-                                    <li><strong>{{ $index + 1 }}.</strong> {{ $move }}</li>
+                                    <li class="history-item"><strong>{{ $index + 1 }}.</strong> {{ $move }}
+                                    </li>
                                 @endforeach
                             </ul>
                         @endif
@@ -78,22 +79,22 @@
 
     </div>
 
-    {{-- <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark text-white border-secondary">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title">🏆 Fim de Jogo!</h5>
+                    <h5 class="modal-title">🏆 Partida Encerrada</h5>
                 </div>
                 <div class="modal-body text-center">
-                    <h2 id="winner-message"></h2>
-                    <p>O Rei foi capturado!</p>
+                    <h2 id="winner-message" class="text-warning"></h2>
+                    <p>O Rei foi capturado com sucesso!</p>
                 </div>
                 <div class="modal-footer border-secondary justify-content-center">
                     <button type="button" class="btn btn-primary" onclick="location.reload()">Jogar Novamente</button>
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
