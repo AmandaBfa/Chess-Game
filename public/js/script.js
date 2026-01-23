@@ -72,6 +72,7 @@ document.querySelectorAll('.square').forEach(square => {
                 } else {
                     // se o jogo acabou
                     if (data.game_over) {
+                        console.log("VITÓRIA DETECTADA!");
                         document.getElementById('winner-message').innerText = `Vencedor: ${data.winner}`;
                         const modalElement = document.getElementById('gameOverModal');
                         const gameOverModal = new bootstrap.Modal(modalElement);

@@ -24,24 +24,19 @@ class ChessGame
         $target = $this->board->squares[$toRow][$toCol] ?? null;
 
         // 1. Validações Iniciais
-        if (!$piece) {
-            return ['success' => false, 'message' => 'Não existe nenhuma peça nessa posição.'];
-        } // evita erro de tentar mover uma peça que nao existe
-
-        if ($piece->color !== $this->turn) {
-            $cor = $this->turn === 'white' ? 'Branca' : 'Preta';
-            return ['success' => false, 'message' => "É a vez da peça $cor jogar."];
-        } // evita que jogue fora da vez
-
+        if (!$piece) return ['success' => false, 'message' => 'Posição vazia.'];
+        if ($piece->color !== $this->turn) return ['success' => false, 'message' => 'Não é sua vez.'];
         if (!$piece->canMove($this->board->squares, $fromRow, $fromCol, $toRow, $toCol)) {
-            return ['success' => false, 'message' => 'Movimento inválido para essa peça.'];
-        } // valida se a peça pode se mover daquela forma
+            return ['success' => false, 'message' => 'Movimento inválido.'];
+        }
 
         // 2. Lógica de Captura e Fim de Jogo (Rei)
         $gameOver = false;
         $winner = null;
 
         if ($target) {
+
+            \Illuminate\Support\Facades\Log::info("Peça capturada: " . $target->type . " Cor: " . $target->color);
             // Registra no cemitério
             if ($target->color === 'white') {
                 $this->capturedWhite[] = $target->type;

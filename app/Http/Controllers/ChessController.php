@@ -36,10 +36,10 @@ class ChessController extends Controller
         }
 
         $result = $game->move(
-            (int) $request->from_row,
-            (int) $request->from_col,
-            (int) $request->to_row,
-            (int) $request->to_col
+            (int) $request->fromRow,
+            (int) $request->fromCol,
+            (int) $request->toRow,
+            (int) $request->toCol
         );
 
         session(['game' => $game]);
