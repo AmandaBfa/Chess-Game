@@ -77,6 +77,14 @@ class ChessGame
         $this->board->squares[$toRow][$toCol] = $piece;
         $this->board->squares[$fromRow][$fromCol] = null;
 
+        $piece->hasMoved = true; // marca que a peça já se moveu (para roque e en passant)
+
+        // detecta a tentativa Roque
+        if ($piece->type === 'king' && abs($fromCol - $toCol) === 2) {
+            return $this->handleCastling($this, $fromRow, $fromCol, $toRow, $toCol);
+        }
+
+
         // 5. Lógica de Promoção (Peão)
         if ($piece->type === 'pawn') {
             if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {

@@ -8,6 +8,7 @@ abstract class Piece
     public string $color; // white or black
     // Inicializar com string vazia evita o erro de "uninitialized"
     public string $type = ''; // pawn, rook, knight, bishop, queen, king
+    public bool $hasMoved = false; // para controle de movimentos especiais (roque, en passant)
 
     public function __construct(string $color, string $type)
     {
