@@ -191,6 +191,7 @@ body {
 
 
 /* aviso para o XEQUE */
+/* podemos tirar esse laranja, e colocar um transição na hr que sair a mensagem */
 .warning-msg {
     color: #ffffff;
     background-color: #f39c12; /* Laranja de alerta */

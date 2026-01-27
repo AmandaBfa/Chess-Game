@@ -41,6 +41,9 @@ class ChessGame
         if (!$piece->canMove($this->board->squares, $fromRow, $fromCol, $toRow, $toCol)) {
             return ['success' => false, 'message' => 'Movimento inválido.'];
         }
+        if ($this->isMoveIllegal($fromRow, $fromCol, $toRow, $toCol)) {
+            return ['success' => false, 'message' => 'Movimento inválido: seu rei ficaria em xeque.'];
+        }
 
         // 2. Lógica de Captura e Fim de Jogo (Rei)
         $gameOver = false;
@@ -98,11 +101,13 @@ class ChessGame
         // verifica se esta em xeque apos o movimento
         $inCheck = $this->isInCheck($this->turn);
 
+        $mensagemFinal = $inCheck ? "XEQUE no Rei " . ($this->turn === 'white' ? 'Branco!' : 'Preto!') : 'Movimento realizado com sucesso!';
+
         if ($inCheck) {
             $this->moveHistory[] = "Xeque para " . (($this->turn === 'white') ? 'Branco' : 'Preto') . "!";
         }
 
-        return ['success' => true, 'message' => 'Movimento realizado com sucesso!', 'check' => $inCheck]; // envia o bool para o js
+        return ['success' => true, 'message' => $mensagemFinal, 'check' => $inCheck]; // envia o bool para o js
 
     }
 
@@ -126,7 +131,7 @@ class ChessGame
         for ($toRow = 0; $toRow < 8; $toRow++) {
             for ($toCol = 0; $toCol < 8; $toCol++) {
                 // chama o metodo que criou em cada peça. passa pelo tabuleiro, posição inicial e final
-                if ($piece->canMove($this->board->squares, $row, $col, $toRow, $toCol)) {
+                if ($piece->canMove($this->board->squares, $row, $col, $toRow, $toCol) && !$this->isMoveIllegal($row, $col, $toRow, $toCol)) {
                     $validMoves[] = ['row' => $toRow, 'col' => $toCol]; // se for true, guarda a posição
                 }
             }
@@ -136,7 +141,7 @@ class ChessGame
     }
 
     // função para encontrar a posição do rei de uma cor específica (fornecer dados)
-    private function findking(string $color): ?array
+    private function findKing(string $color): ?array
     {
         foreach ($this->board->squares as $rowIndex => $row) {
             foreach ($row as $colIndex => $piece) {
@@ -155,7 +160,7 @@ class ChessGame
     public function isInCheck(string $color): bool
     {
         // Localiza o Rei (usando o camelCase correto)
-        $kingPosition = $this->findking($color);
+        $kingPosition = $this->findKing($color);
 
         if (!$kingPosition) {
             return false; // Rei não encontrado, não pode estar em xeque
@@ -175,5 +180,26 @@ class ChessGame
         }
 
         return false; // O rei não está em xeque
+    }
+
+    public function isMoveIllegal(int $fromRow, int $fromCol, int $toRow, int $toCol): bool
+    {
+        // guarda o estado atual do tabuleiro
+        $movingPiece = $this->board->squares[$fromRow][$fromCol];
+        $targetPiece = $this->board->squares[$toRow][$toCol];
+
+        // executa o movimento temporariamente
+        $this->board->squares[$toRow][$toCol] = $movingPiece;
+        $this->board->squares[$fromRow][$fromCol] = null;
+
+        // verifica se o rei do jogador que está movendo está em xeque
+        $myColor = $movingPiece->color;
+        $isStillInCheck = $this->isInCheck($myColor);
+
+        // desfaz o movimento temporário
+        $this->board->squares[$fromRow][$fromCol] = $movingPiece;
+        $this->board->squares[$toRow][$toCol] = $targetPiece;
+
+        return $isStillInCheck;
     }
 }

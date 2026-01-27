@@ -100,7 +100,8 @@ document.querySelectorAll('.square').forEach(square => {
                     // se houve xeque
                     if (data.check) {
                         messageDiv.textContent = data.message;
-                        messageDiv.classList.add('warning-msg'); 
+                        messageDiv.classList.remove('victory-msg');
+                        messageDiv.classList.add('warning-msg');
                         
                         console.log("Alerta de Xeque disparado!");
                 
