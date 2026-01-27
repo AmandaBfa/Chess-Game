@@ -98,6 +98,19 @@ class ChessGame
         // Troca de turno
         $this->turn = ($this->turn === 'white') ? 'black' : 'white';
 
+        // verifica se é mate
+        if ($this->isCheckMate($this->turn)) {
+            $this->isFinished = true;
+            $vencedor = ($this->turn === 'white') ? 'Preto' : 'Branco';
+
+            return [
+                'success' => true,
+                'message' => "XEQUE-MATE! O vencedor é o jogador $vencedor.",
+                'game_over' => true,
+                'winner' => $vencedor
+            ];
+        }
+
         // verifica se esta em xeque apos o movimento
         $inCheck = $this->isInCheck($this->turn);
 
@@ -201,5 +214,37 @@ class ChessGame
         $this->board->squares[$toRow][$toCol] = $targetPiece;
 
         return $isStillInCheck;
+    }
+
+    public function isCheckMate(string $color): bool
+    {
+        // Verifica se o rei está em xeque
+        if (!$this->isInCheck($color)) {
+            return false; // Não é xeque-mate se o rei não estiver em xeque
+        }
+
+        // Verifica todas as peças do jogador
+        foreach ($this->board->squares as $rowIndex => $row) {
+            foreach ($row as $colIndex => $piece) {
+                // Se a peça existir e for da cor do jogador
+                if ($piece && $piece->color === $color) {
+                    // Verifica todos os movimentos possíveis para essa peça
+                    for ($toRow = 0; $toRow < 8; $toRow++) {
+                        for ($toCol = 0; $toCol < 8; $toCol++) {
+                            if (
+                                $piece->canMove($this->board->squares, $rowIndex, $colIndex, $toRow, $toCol) &&
+                                !$this->isMoveIllegal($rowIndex, $colIndex, $toRow, $toCol)
+                            ) {
+
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Se nenhum movimento puder tirar o rei do xeque, é xeque-mate
+        return true;
     }
 }
