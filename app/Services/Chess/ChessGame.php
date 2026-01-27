@@ -95,7 +95,15 @@ class ChessGame
         // Troca de turno
         $this->turn = ($this->turn === 'white') ? 'black' : 'white';
 
-        return ['success' => true, 'message' => 'Movimento realizado com sucesso!'];
+        // verifica se esta em xeque apos o movimento
+        $inCheck = $this->isInCheck($this->turn);
+
+        if ($inCheck) {
+            $this->moveHistory[] = "Xeque para " . (($this->turn === 'white') ? 'Branco' : 'Preto') . "!";
+        }
+
+        return ['success' => true, 'message' => 'Movimento realizado com sucesso!', 'check' => $inCheck]; // envia o bool para o js
+
     }
 
     // Função para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
@@ -125,5 +133,47 @@ class ChessGame
         }
 
         return $validMoves;
+    }
+
+    // função para encontrar a posição do rei de uma cor específica (fornecer dados)
+    private function findking(string $color): ?array
+    {
+        foreach ($this->board->squares as $rowIndex => $row) {
+            foreach ($row as $colIndex => $piece) {
+                // verificamos se existe uma peça, se é um rei e se é da cor procurada
+                if ($piece && $piece->type === 'king' && $piece->color === $color) {
+                    return ['row' => $rowIndex, 'col' => $colIndex];
+                }
+            }
+        }
+
+        // Retorna null se nenhum rei da cor especificada for encontrado
+        return null;
+    }
+
+
+    public function isInCheck(string $color): bool
+    {
+        // Localiza o Rei (usando o camelCase correto)
+        $kingPosition = $this->findking($color);
+
+        if (!$kingPosition) {
+            return false; // Rei não encontrado, não pode estar em xeque
+        }
+
+        // Verifica todas as peças do tabuleiro
+        foreach ($this->board->squares as $rowIndex => $row) {
+            foreach ($row as $colIndex => $piece) {
+                // Se a peça existir e for da cor oposta
+                if ($piece && $piece->color !== $color) {
+                    // Verifica se essa peça pode mover para a posição do rei
+                    if ($piece->canMove($this->board->squares, $rowIndex, $colIndex, $kingPosition['row'], $kingPosition['col'])) {
+                        return true; // O rei está em xeque
+                    }
+                }
+            }
+        }
+
+        return false; // O rei não está em xeque
     }
 }

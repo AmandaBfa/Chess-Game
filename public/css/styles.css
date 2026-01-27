@@ -149,6 +149,8 @@ body {
     width: auto;
 }
 
+
+/* container lateral que vai ficar o historico de jogadas */
 .sidebar {
     width: 300px;
     background: #2c2c2c;
@@ -160,6 +162,8 @@ body {
     padding: 15px;
 }
 
+
+/* parte interna do container de historico de jogadas */
 .history-container {
     flex-grow: 1;
     overflow-y: auto;         /* Cria barra de rolagem se a lista for grande */
@@ -177,8 +181,29 @@ body {
     font-size: 0.9em;
 }
 
+
+/* congelar o tabulerio para realizar a analise do jogo */
 .board.frozen {
     pointer-events: none; 
     opacity: 0.8;
     cursor: not-allowed;
+}
+
+
+/* aviso para o XEQUE */
+.warning-msg {
+    color: #ffffff;
+    background-color: #f39c12; /* Laranja de alerta */
+    border: 2px solid #e67e22;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: pulse 1.5s infinite; /* Um charminho extra */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }

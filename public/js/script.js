@@ -97,7 +97,20 @@ document.querySelectorAll('.square').forEach(square => {
                         
                         return; // Para o fluxo aqui para não dar reload
                     }
-                    window.location.reload();
+                    // se houve xeque
+                    if (data.check) {
+                        messageDiv.textContent = data.message;
+                        messageDiv.classList.add('warning-msg'); 
+                        
+                        console.log("Alerta de Xeque disparado!");
+                
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000); // 2 segundos para o humano conseguir ler
+                    } else {
+                        // Se não for xeque nem fim de jogo, recarrega na hora
+                        window.location.reload();
+                    }
                 }
             })
             .catch(err => console.error("Erro no movimento:", err));
