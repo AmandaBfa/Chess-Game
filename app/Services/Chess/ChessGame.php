@@ -84,7 +84,6 @@ class ChessGame
             return $this->handleCastling($this, $fromRow, $fromCol, $toRow, $toCol);
         }
 
-
         // 5. Lógica de Promoção (Peão)
         if ($piece->type === 'pawn') {
             if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {
@@ -254,5 +253,44 @@ class ChessGame
 
         // Se nenhum movimento puder tirar o rei do xeque, é xeque-mate
         return true;
+    }
+
+    public function handleCastling(ChessGame $this, int $fromRow, int $fromCol, int $toRow, int $toCol): array
+    {
+        $king = $this->board->squares[$fromRow][$fromCol];
+
+        // 1. Verifica se o Rei e a Torre alvo já se moveram ($hasMoved)            
+        if ($king->hasMoved) {
+            return ['success' => false, 'message' => 'Roque inválido: o Rei já se moveu.'];
+        }
+
+        $rookCol = ($toCol === 6) ? 7 : 0; // 7 para o roque pequeno e 0 para o roque grande
+        $rook = $this->board->squares[$fromRow][$rookCol];
+
+        if (!$rook || $rook->type != 'rook' || $rook->hasMoved) {
+            return ['success' => false, 'message' => 'Roque inválido: a Torre já se moveu ou não existe.'];
+        }
+
+        // 2. Verifica se o caminho está livre (squares == null)
+        $step = ($toCol === 6) ? 1 : -1;
+        for ($col = $fromCol + $step; $col != $rookCol; $col += $step) {
+            if ($this->board->squares[$fromRow][$col] !== null) {
+                return ['success' => false, 'message' => 'Roque inválido: o caminho entre o Rei e a Torre não está livre.'];
+            }
+        }
+
+        // 3. Verifica se o Rei não está ou passa por Xeque (isInCheck)
+        if ($this->isInCheck($this->turn)) {
+            return ['success' => false, 'message' => 'Roque inválido: o Rei está em xeque.'];
+        }
+
+        // Se tudo ok: move o Rei E move a Torre manualmente aqui dentro.
+        $this->board->squares[$toRow][$toCol] = $this->board->squares[$fromRow][$fromCol]; // move o rei
+        $this->board->squares[$fromRow][$fromCol] = null;
+
+        // Retorna o sucesso.
+        $newRookCol = ($toCol === 6) ? 5 : 3; // nova posição da torre após o roque
+        $this->board->squares[$fromRow][$newRookCol] = $rook; // move a torre
+        $this->board->squares[$fromRow][$rookCol] = null;
     }
 }
