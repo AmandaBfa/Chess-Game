@@ -13,7 +13,8 @@ class ChessGame
     public array $capturedWhite = [];
     public array $capturedBlack = [];
     public array $moveHistory = [];
-    public bool $isFinished = false; // indica se o jogo acabou
+    public bool $isFinished = false;
+    public ?array $lastMove = null;
 
     public function __construct()
     {
@@ -23,21 +24,24 @@ class ChessGame
 
     public function move(int $fromRow, int $fromCol, int $toRow, int $toCol): array
     {
-        // trava de segurança -- se o jogo já acabou, não deixa mover mais
+        // trava de segurança 
         if ($this->isFinished) {
-            return [
-                'success' => false,
-                'message' => 'A partida acabou. Clique em "Novo Jogo" para reiniciar.'
-            ];
+            return ['success' => false, 'message' => 'A partida acabou. Clique em "Novo Jogo" para reiniciar.'];
         }
 
-        // Obtém a peça na posição inicial e o alvo na posição final
         $piece = $this->board->squares[$fromRow][$fromCol] ?? null;
         $target = $this->board->squares[$toRow][$toCol] ?? null;
 
-        // 1. Validações Iniciais
+        // Validações de acesso
         if (!$piece) return ['success' => false, 'message' => 'Posição vazia.'];
         if ($piece->color !== $this->turn) return ['success' => false, 'message' => 'Não é sua vez.'];
+
+        // Exceção: Roque
+        if ($piece->type === 'king' && abs($fromCol - $toCol) === 2) {
+            return $this->handleCastling($fromRow, $fromCol, $toRow, $toCol); // trata o roque
+        }
+
+        // Validações Fisicas de Movimento
         if (!$piece->canMove($this->board->squares, $fromRow, $fromCol, $toRow, $toCol)) {
             return ['success' => false, 'message' => 'Movimento inválido.'];
         }
@@ -45,22 +49,11 @@ class ChessGame
             return ['success' => false, 'message' => 'Movimento inválido: seu rei ficaria em xeque.'];
         }
 
-        // 2. Lógica de Captura e Fim de Jogo (Rei)
+        // Registro de captura
         $gameOver = false;
         $winner = null;
-
         if ($target) {
-            // Log de captura
-            \Illuminate\Support\Facades\Log::info("Peça capturada: " . $target->type . " Cor: " . $target->color);
-
-            // Registra no cemitério
-            if ($target->color === 'white') {
-                $this->capturedWhite[] = $target->type;
-            } else {
-                $this->capturedBlack[] = $target->type;
-            }
-
-            // Verifica se o jogo acabou (captura do rei)
+            $this->registrarCaputra($target);
             if ($target->type === 'king') {
                 $gameOver = true;
                 $this->isFinished = true;
@@ -68,21 +61,14 @@ class ChessGame
             }
         }
 
-        // 3. Registro no Histórico
-        $corNome = ($this->turn === 'white') ? 'Branco' : 'Preto';
-        $pecaNome = ucfirst($piece->type); // ucfirst para deixar a primeira letra maiuscula
-        $this->moveHistory[] = "{$corNome} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
-
-        // 4. Execução do Movimento
+        // Execução Fisica e Atualização do Estado
         $this->board->squares[$toRow][$toCol] = $piece;
         $this->board->squares[$fromRow][$fromCol] = null;
+        $piece->hasMoved = true; // marca que a peça já se moveu  
 
-        $piece->hasMoved = true; // marca que a peça já se moveu (para roque e en passant)
-
-        // detecta a tentativa Roque
-        if ($piece->type === 'king' && abs($fromCol - $toCol) === 2) {
-            return $this->handleCastling($this, $fromRow, $fromCol, $toRow, $toCol);
-        }
+        // Registro no Histórico
+        $pecaNome = ucfirst($piece->type);
+        $this->moveHistory[] = "{$this->turn} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
 
         // 5. Lógica de Promoção (Peão)
         if ($piece->type === 'pawn') {
@@ -100,6 +86,23 @@ class ChessGame
                 'game_over' => true,
                 'winner' => $winner
             ];
+        }
+
+        $this->lastMove = [
+            'fromCol' => $fromCol,
+            'toCol' => $toCol,
+            'fromRow' => $fromRow,
+            'toRow' => $toRow,
+            'type' => $piece->type,
+            'color' => $piece->color
+        ];
+
+        // Detecção de execução de En Passant
+        if ($piece->type === 'pawn' && $fromCol !== $toCol && $target === null) {
+            // Se o peão moveu na diagonal para uma casa vazia, é En Passant
+            // Precisamos remover o peão que estava na linha de origem, na mesma coluna de destino
+            $this->board->squares[$fromRow][$toCol] = null;
+            $this->moveHistory[count($this->moveHistory) - 1] .= " (En Passant!)";
         }
 
         // Troca de turno
@@ -160,7 +163,7 @@ class ChessGame
         return $validMoves;
     }
 
-    // função para encontrar a posição do rei de uma cor específica (fornecer dados)
+    // função para encontrar a posição do rei de uma cor específica 
     private function findKing(string $color): ?array
     {
         foreach ($this->board->squares as $rowIndex => $row) {
@@ -187,19 +190,37 @@ class ChessGame
         }
 
         // Verifica todas as peças do tabuleiro
-        foreach ($this->board->squares as $rowIndex => $row) {
-            foreach ($row as $colIndex => $piece) {
+        // foreach ($this->board->squares as $rowIndex => $row) {
+        //     foreach ($row as $colIndex => $piece) {
+        //         // Se a peça existir e for da cor oposta
+        //         if ($piece && $piece->color !== $color) {
+        //             // Verifica se essa peça pode mover para a posição do rei
+        //             if ($piece->canMove($this->board->squares, $rowIndex, $colIndex, $kingPosition['row'], $kingPosition['col'])) {
+        //                 return true; // O rei está em xeque
+        //             }
+        //         }
+        //     }
+        // }
+        // return false; // O rei não está em xeque
+
+        return $this->isSquareAttacked($kingPosition['row'], $kingPosition['col'], $color);
+    }
+
+    public function isSquareAttacked(int $row, int $col, string $color): bool
+    {
+        foreach ($this->board->squares as $rowIndex => $rowPieces) {
+            foreach ($rowPieces as $colIndex => $piece) {
                 // Se a peça existir e for da cor oposta
                 if ($piece && $piece->color !== $color) {
-                    // Verifica se essa peça pode mover para a posição do rei
-                    if ($piece->canMove($this->board->squares, $rowIndex, $colIndex, $kingPosition['row'], $kingPosition['col'])) {
-                        return true; // O rei está em xeque
+                    // Verifica se essa peça pode mover para a posição especificada
+                    if ($piece->canMove($this->board->squares, $rowIndex, $colIndex, $row, $col)) {
+                        return true; // A casa está sendo atacada
                     }
                 }
             }
         }
 
-        return false; // O rei não está em xeque
+        return false; // A casa não está sendo atacada
     }
 
     public function isMoveIllegal(int $fromRow, int $fromCol, int $toRow, int $toCol): bool
@@ -255,7 +276,7 @@ class ChessGame
         return true;
     }
 
-    public function handleCastling(ChessGame $this, int $fromRow, int $fromCol, int $toRow, int $toCol): array
+    public function handleCastling(int $fromRow, int $fromCol, int $toRow, int $toCol): array
     {
         $king = $this->board->squares[$fromRow][$fromCol];
 
@@ -275,22 +296,45 @@ class ChessGame
         $step = ($toCol === 6) ? 1 : -1;
         for ($col = $fromCol + $step; $col != $rookCol; $col += $step) {
             if ($this->board->squares[$fromRow][$col] !== null) {
-                return ['success' => false, 'message' => 'Roque inválido: o caminho entre o Rei e a Torre não está livre.'];
+                return ['success' => false, 'message' => 'Caminho não está livre para o Roque.'];
             }
         }
 
         // 3. Verifica se o Rei não está ou passa por Xeque (isInCheck)
         if ($this->isInCheck($this->turn)) {
-            return ['success' => false, 'message' => 'Roque inválido: o Rei está em xeque.'];
+            return ['success' => false, 'message' => 'Não é permitido fazer Roque em xeque.'];
         }
 
-        // Se tudo ok: move o Rei E move a Torre manualmente aqui dentro.
-        $this->board->squares[$toRow][$toCol] = $this->board->squares[$fromRow][$fromCol]; // move o rei
-        $this->board->squares[$fromRow][$fromCol] = null;
+        $intermediateCol = $fromCol + $step;
+        if ($this->isSquareAttacked($fromRow, $intermediateCol, $this->turn)) {
+            return ['success' => false, 'message' => 'O Rei não pode passar por uma casa atacada durante o Roque.'];
+        }
 
-        // Retorna o sucesso.
-        $newRookCol = ($toCol === 6) ? 5 : 3; // nova posição da torre após o roque
-        $this->board->squares[$fromRow][$newRookCol] = $rook; // move a torre
+        // 4. Executa o Roque
+        $this->board->squares[$toRow][$toCol] = $king; // move o rei
+        $this->board->squares[$fromRow][$fromCol] = null;
+        $king->hasMoved = true;
+
+        // move a torre
+        $newRookCol = ($toCol === 6) ? 5 : 3;
+        $this->board->squares[$fromRow][$newRookCol] = $rook;
         $this->board->squares[$fromRow][$rookCol] = null;
+        $rook->hasMoved = true;
+
+        // 4. retorna sucesso
+        $howPlayed = ($this->turn === 'white') ? 'Branco' : 'Preto';
+        $this->turn = ($this->turn === 'white') ? 'black' : 'white';
+        $this->moveHistory[] = "Roque " . ($toCol === 6 ? 'Pequeno' : 'Grande') . " realizado pelo jogador " . $howPlayed;
+
+        return ['success' => true, 'message' => 'Roque realizado com sucesso!', 'check' => $this->isInCheck($this->turn)];
+    }
+
+    public function registrarCaputra($target): void
+    {
+        if ($target->color === 'white') {
+            $this->capturedWhite[] = $target->type;
+        } else {
+            $this->capturedBlack[] = $target->type;
+        }
     }
 }
