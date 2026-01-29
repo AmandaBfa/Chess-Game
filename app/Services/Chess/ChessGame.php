@@ -53,7 +53,7 @@ class ChessGame
         $gameOver = false;
         $winner = null;
         if ($target) {
-            $this->registrarCaputra($target);
+            $this->registrarCaptura($target);
             if ($target->type === 'king') {
                 $gameOver = true;
                 $this->isFinished = true;
@@ -68,26 +68,18 @@ class ChessGame
 
         // Registro no Histórico
         $pecaNome = ucfirst($piece->type);
-        $this->moveHistory[] = "{$this->turn} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
+        $corNome = ($this->turn === 'white') ? 'Branco' : 'Preto';
+        $this->moveHistory[] = "{$corNome} {$pecaNome}: ({$fromRow},{$fromCol}) -> ({$toRow},{$toCol})";
 
-        // 5. Lógica de Promoção (Peão)
-        if ($piece->type === 'pawn') {
-            if (($piece->color === 'white' && $toRow === 0) || ($piece->color === 'black' && $toRow === 7)) {
-                $this->board->squares[$toRow][$toCol] = new \App\Services\Chess\Pieces\Queen($piece->color);
-                $this->moveHistory[count($this->moveHistory) - 1] .= " (Promovido a Rainha!)";
-            }
-        }
+        // Regra Especiais
+        $this->processSpecialRules($piece, $fromRow, $fromCol, $toRow, $toCol, $target);
 
-        // 6. Retorno de Vitória ou Troca de Turno
+        // Verificação de Fim de Jogo
         if ($gameOver) {
-            return [
-                'success' => true,
-                'message' => "Jogo terminado! O vencedor é o jogador $winner.",
-                'game_over' => true,
-                'winner' => $winner
-            ];
+            return ['success' => true, 'message' => "Jogo terminado! O vencedor é o jogador $winner.", 'game_over' => true, 'winner' => $winner];
         }
 
+        // Armazena o último movimento
         $this->lastMove = [
             'fromCol' => $fromCol,
             'toCol' => $toCol,
@@ -97,14 +89,6 @@ class ChessGame
             'color' => $piece->color
         ];
 
-        // Detecção de execução de En Passant
-        if ($piece->type === 'pawn' && $fromCol !== $toCol && $target === null) {
-            // Se o peão moveu na diagonal para uma casa vazia, é En Passant
-            // Precisamos remover o peão que estava na linha de origem, na mesma coluna de destino
-            $this->board->squares[$fromRow][$toCol] = null;
-            $this->moveHistory[count($this->moveHistory) - 1] .= " (En Passant!)";
-        }
-
         // Troca de turno
         $this->turn = ($this->turn === 'white') ? 'black' : 'white';
 
@@ -112,7 +96,6 @@ class ChessGame
         if ($this->isCheckMate($this->turn)) {
             $this->isFinished = true;
             $vencedor = ($this->turn === 'white') ? 'Preto' : 'Branco';
-
             return [
                 'success' => true,
                 'message' => "XEQUE-MATE! O vencedor é o jogador $vencedor.",
@@ -123,15 +106,11 @@ class ChessGame
 
         // verifica se esta em xeque apos o movimento
         $inCheck = $this->isInCheck($this->turn);
-
         $mensagemFinal = $inCheck ? "XEQUE no Rei " . ($this->turn === 'white' ? 'Branco!' : 'Preto!') : 'Movimento realizado com sucesso!';
-
         if ($inCheck) {
             $this->moveHistory[] = "Xeque para " . (($this->turn === 'white') ? 'Branco' : 'Preto') . "!";
         }
-
         return ['success' => true, 'message' => $mensagemFinal, 'check' => $inCheck]; // envia o bool para o js
-
     }
 
     // Função para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
@@ -178,7 +157,6 @@ class ChessGame
         // Retorna null se nenhum rei da cor especificada for encontrado
         return null;
     }
-
 
     public function isInCheck(string $color): bool
     {
@@ -329,12 +307,34 @@ class ChessGame
         return ['success' => true, 'message' => 'Roque realizado com sucesso!', 'check' => $this->isInCheck($this->turn)];
     }
 
-    public function registrarCaputra($target): void
+    public function registrarCaptura($target): void
     {
         if ($target->color === 'white') {
             $this->capturedWhite[] = $target->type;
         } else {
             $this->capturedBlack[] = $target->type;
+        }
+    }
+
+    private function processSpecialRules($piece, $fromRow, $fromCol, $toRow, $toCol, $target): void
+    {
+        // Implementar regras especiais como En Passant e Promoção de Peão
+        if ($piece->type !== 'pawn') {
+            return;
+        }
+
+        // En Passant
+        if ($fromCol !== $toCol && $target === null) {
+            $peaoCapturado = $this->board->squares[$fromRow][$toCol]; // Pega a peça ao lado
+            $this->registrarCaptura($peaoCapturado);
+            $this->board->squares[$fromRow][$toCol] = null;
+            $this->moveHistory[count($this->moveHistory) - 1] .= " (En Passant!)";
+        }
+
+        // Promoção de Peão
+        if ($piece->color === 'white' && $toRow === 0 || $piece->color === 'black' && $toRow === 7) {
+            $this->board->squares[$toRow][$toCol] = new \App\Services\Chess\Pieces\Queen($piece->color);
+            $this->moveHistory[count($this->moveHistory) - 1] .= " (Promovido a Rainha " . ($piece->color === 'white' ? 'Branca' : 'Preta') . "!)";
         }
     }
 }
