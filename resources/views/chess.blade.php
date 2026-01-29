@@ -22,23 +22,47 @@
 <body>
 
     <div class="game-container">
-        <div class="graveyard black-graveyard">
-            @foreach ($capturedBlack as $type)
-                <span class="captured-piece">{{ $icons['black'][$type] }}</span>
-            @endforeach
+
+        <div class="sidebar glass-card">
+            <h5 class="text-center border-bottom pb-2">Histórico</h5>
+            <div class="history-container">
+                @if (empty($moveHistory))
+                    <p class="text-muted text-center">Aguardando jogadas...</p>
+                @else
+                    <ul class="list-unstyled">
+                        @foreach ($moveHistory as $index => $move)
+                            <li class="history-item"><strong>{{ $index + 1 }}.</strong> {{ $move }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
         </div>
 
-
         <div class="game-area">
-            <div class="info text-center mb-3">
-                <span id="turn-text" class="badge bg-secondary p-2">Turno: {{ ucfirst($turn) }}</span>
-                <div id="message" class="mt-2"></div>
-                <button id="button" onclick="resetGame()" class="btn btn-outline-danger btn-sm mt-2">Novo
-                    Jogo</button>
+
+            <div class="player-panel glass-card top-panel">
+                <div class="player-info">
+                    <div class="avatar">MA</div>
+                    <div class="name-area">
+                        <span class="player-name">Magnus (Pretas)</span>
+                        <div class="graveyard">
+                            @foreach ($capturedWhite as $type)
+                                <span class="captured-piece">{{ $icons['white'][$type] }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="timer" id="timer-black">10:00</div>
             </div>
 
-            <div class="main-play-container">
-                <div class="board {{ $isFinished ? 'frozen' : '' }}">
+            <div class="board-wrapper">
+                <div class="coords-y">
+                    @foreach (range(8, 1) as $num)
+                        <span>{{ $num }}</span>
+                    @endforeach
+                </div>
+
+                <div class="board glass-card {{ $isFinished ? 'frozen' : '' }}">
                     @foreach ($board as $rowIndex => $row)
                         @foreach ($row as $colIndex => $piece)
                             @php $colorClass = ($rowIndex + $colIndex) % 2 === 0 ? 'light' : 'dark'; @endphp
@@ -54,30 +78,37 @@
                     @endforeach
                 </div>
 
-                <div class="sidebar">
-                    <h5 class="text-center border-bottom pb-2">Histórico</h5>
-                    <div class="history-container">
-                        @if (empty($moveHistory))
-                            <p class="text-muted text-center">Aguardando jogadas...</p>
-                        @else
-                            <ul class="list-unstyled">
-                                @foreach ($moveHistory as $index => $move)
-                                    <li class="history-item"><strong>{{ $index + 1 }}.</strong> {{ $move }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+                <div class="coords-x">
+                    @foreach (range('a', 'h') as $letra)
+                        <span>{{ $letra }}</span>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="player-panel glass-card bottom-panel active">
+                <div class="player-info">
+                    <div class="avatar">YO</div>
+                    <div class="name-area">
+                        <span class="player-name">Você (Brancas)</span>
+                        <div class="graveyard">
+                            @foreach ($capturedBlack as $type)
+                                <span class="captured-piece">{{ $icons['black'][$type] }}</span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
+                <div class="timer" id="timer-white">10:00</div>
             </div>
         </div>
 
-        <div class="graveyard white-graveyard">
-            @foreach ($capturedWhite as $type)
-                <span class="captured-piece">{{ $icons['white'][$type] }}</span>
-            @endforeach
+        <div class="controls-sidebar glass-card">
+            <div id="turn-text" class="status-badge">Turno: {{ ucfirst($turn) }}</div>
+            <div id="message" class="mt-2"></div>
+            <div class="action-buttons">
+                <button id="button" onclick="resetGame()" class="btn-action">Novo Jogo</button>
+                <button class="btn-action outline">Analisar</button>
+            </div>
         </div>
-
     </div>
 
     <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">

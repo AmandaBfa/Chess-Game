@@ -1,3 +1,12 @@
+:root {
+    --bg-main: #050a14;        /* Fundo quase preto, puxado para o marinho */
+    --bg-card: rgba(16, 26, 43, 0.6); /* Azul marinho translúcido (vidro) */
+    --accent-blue: #0049b6;    /* Azul Oceano para destaques */
+    --light-blue: #adcef4;     /* Azul claro para detalhes de luz */
+    --square-light: #243044;   /* Casa clara (azul acinzentado) */
+    --square-dark: #121926;    /* Casa escura (marinho profundo) */
+}
+
 body {
     background-color: #121212; /* Preto grafite */
     color: #e0e0e0; /* Cinza claro */
@@ -11,11 +20,7 @@ body {
     font-family: sans-serif;
 }
 
-.game-area {
-    text-align: center;
-    width: 100%;
-    max-width: 1000px; 
-}
+
 
 .info {
     margin-bottom: 15px;
@@ -49,14 +54,6 @@ body {
 
 .error-msg { color: #e74c3c; font-size: 14px; margin-top: 5px; }
 
-/* O Tabuleiro */
-.board {
-    display: grid;
-    grid-template-columns: repeat(8, 60px);
-    grid-template-rows: repeat(8, 60px);
-    border: 5px solid #333;
-}
-
 .square {
     width: 60px;
     height: 60px;
@@ -68,11 +65,22 @@ body {
 }
 
 /* Cores das casas */
-.light { background-color: #f0f0f0; }
-.dark { background-color: #d1d1d1; }
+.light { background-color: #d1d5db; }
+.dark { background-color: #99a4ca; }
 
-/* Seleção */
-.square.selected { background-color: #add8e6 !important; } /* Azul bebê */
+/* Removemos o fundo azul/verde da casa selecionada */
+.square.selected {
+    background-color: transparent !important; 
+    outline: 2px solid var(--accent-blue); /* Borda fina azul marinho */
+    filter: drop-shadow(0 0 10px #4085e0);
+    outline-offset: -2px;
+}
+
+/* Destaque apenas na peça */
+.square.selected .piece {
+    filter: drop-shadow(0 0 15px var(--accent-blue)); /* Sombra de luz azul */
+    transform: scale(1.1); /* Um leve crescimento para dar foco */
+}
 
 /* Cores das Peças (opcional se quiser diferenciar mais) */
 .piece.black { color: #000; }
@@ -110,10 +118,20 @@ body {
 
 .game-container {
     display: flex;
+    flex-direction: row;      /* Garante o histórico de um lado e o jogo de outro */
+    justify-content: center;
+    align-items: center;  /* Alinha os topos */
+    gap: 30px;
+    padding: 40px;
+    background: var(--bg-main);
+    min-height: 100vh;
+}
+
+.game-area {
+    display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding: 20px;
 }
 
 .graveyard {
@@ -207,4 +225,105 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); /* Branco bem transparente */
+    backdrop-filter: blur(12px);          /* O desfoque do fundo (segredo do vidro) */
+    -webkit-backdrop-filter: blur(12px);   /* Suporte para Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda fina que reflete luz */
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Sombra para dar profundidade */
+}
+
+.board-wrapper {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px auto; /* 40px para os números */
+    grid-template-rows: auto 40px;    /* 40px para as letras */
+}
+
+.board {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+    border: 4px solid var(--bg-card);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Estilo das letras e números */
+.coords-y, .coords-x {
+    display: flex;
+    color: var(--light-blue);
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.coords-y {
+    flex-direction: column;
+    justify-content: space-around;
+    padding-right: 10px;
+}
+
+.coords-x {
+    grid-column: 2;
+    justify-content: space-around;
+    padding-top: 10px;
+}
+
+.piece {
+    font-size: 45px; /* Peças maiores como no mockup */
+    transition: all 0.2s ease; /* Suaviza o crescimento */
+    display: inline-block;
+    cursor: grab;
+    z-index: 5;
+}
+
+/* Efeito de Crescer (Hover) */
+.piece:hover {
+    transform: scale(1.2); /* Aumenta 20% */
+    filter: drop-shadow(0 0 10px var(--accent-blue)); /* Brilho neon */
+}
+
+.player-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    background: var(--bg-card);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid var(--accent-blue);
+}
+
+.timer {
+    font-size: 28px;
+    font-family: 'Courier New', Courier, monospace; /* Fonte estilo relógio */
+    color: var(--accent-blue);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 15px;
+    border-radius: 8px;
+    text-shadow: 0 0 10px var(--accent-blue);
+}
+
+/* Indica de quem é a vez com um pulso sutil */
+.player-panel.active {
+    border: 1px solid var(--accent-blue);
+    box-shadow: 0 0 15px rgba(64, 224, 208, 0.2);
 }
