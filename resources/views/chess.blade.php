@@ -106,7 +106,7 @@
             <div id="message" class="mt-2"></div>
             <div class="action-buttons">
                 <button id="button" onclick="resetGame()" class="btn-action">Novo Jogo</button>
-                <button class="btn-action outline">Analisar</button>
+                <button class="btn-action outline">Analisar Partida</button>
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark text-white border-secondary">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title">🏆 Partida Encerrada</h5>
+                    <h5 class="modal-title">Partida Encerrada</h5>
                 </div>
                 <div class="modal-body text-center">
                     <h2 id="winner-message" class="text-warning"></h2>
