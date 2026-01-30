@@ -6,8 +6,6 @@ use App\Services\Chess\Board;
 
 class ChessGame
 {
-    // aqui dentro é onde vai ter a lógica do jogo, feita pelo php
-
     public Board $board;  // pawn, rook, knight, bishop, queen, king
     public string $turn;
     public array $capturedWhite = [];
@@ -113,7 +111,7 @@ class ChessGame
         return ['success' => true, 'message' => $mensagemFinal, 'check' => $inCheck]; // envia o bool para o js
     }
 
-    // Função para obter os movimentos validos de uma peça -- vai mostrar os quadrados possiveis
+    // obter os movimentos validos de uma peça
     public function getValidMoves(int $row, int $col): array
     {
         // trava de segurança 
@@ -142,7 +140,7 @@ class ChessGame
         return $validMoves;
     }
 
-    // função para encontrar a posição do rei de uma cor específica 
+    // encontrar a posição do rei de uma cor específica 
     private function findKing(string $color): ?array
     {
         foreach ($this->board->squares as $rowIndex => $row) {

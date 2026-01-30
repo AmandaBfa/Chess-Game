@@ -1,12 +1,23 @@
 let selected = null;
 const messageDiv = document.getElementById('message');
 
+// Tempo inicial em segundos 
+let timeLeft = {
+    white: 600,
+    black: 600
+};
+
+let timerInterval = null;
+let gameStarted = false; // O relógio só começa após o primeiro lance
+
 // Função para limpar tudo
 function clearHighlights() {
     document.querySelectorAll('.square').forEach(sq => {
         sq.classList.remove('selected', 'valid-move');
     });
 }
+
+updateTimerDisplay();
 
 document.querySelectorAll('.square').forEach(square => {
     square.addEventListener('click', () => {
@@ -114,6 +125,21 @@ document.querySelectorAll('.square').forEach(square => {
                     }
                 }
             })
+            .then(data => {
+                if (data.success) {
+                    // 1. Atualiza o turno com o que veio do PHP
+                    currentTurn = data.turn; 
+        
+                    // 2. Inicia o relógio se for o primeiro lance
+                    if (!gameStarted) {
+                        gameStarted = true;
+                        startChessClock();
+                    }
+        
+                    // 3. Atualiza o visual (Glow do jogador ativo)
+                    marcarJogadorAtivo(currentTurn);
+                }
+            })
             .catch(err => console.error("Erro no movimento:", err));
         }
     });
@@ -159,4 +185,51 @@ function resetGame() {
 const mainResetBtn = document.getElementById('reset-btn');
 if (mainResetBtn) {
     mainResetBtn.addEventListener('click', resetGame);
+}
+
+function startChessClock() {
+    // Se já houver um intervalo a correr, não criamos outro (evita o relógio acelerar)
+    if (timerInterval) return;
+
+    timerInterval = setInterval(() => {
+        // 'currentTurn' deve ser a variável que guarda se é 'white' ou 'black'
+        if (timeLeft[currentTurn] > 0) {
+            timeLeft[currentTurn]--;
+            updateTimerDisplay();
+        } else {
+            // O tempo acabou!
+            stopChessClock();
+            alert("O tempo acabou! Vitoria das " + (currentTurn === 'white' ? 'Pretas' : 'Brancas'));
+        }
+    }, 1000);
+}
+
+function stopChessClock() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function updateTimerDisplay() {
+    const format = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        // padStart(2, '0') garante que 9 segundos fiquem "09"
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    document.getElementById('timer-white').innerText = format(timeLeft.white);
+    document.getElementById('timer-black').innerText = format(timeLeft.black);
+}
+
+function marcarJogadorAtivo(corAtiva) {
+    // Remove o destaque de ambos
+    document.querySelector('.bottom-panel').classList.remove('active');
+    document.querySelector('.top-panel').classList.remove('active');
+
+    // Adiciona o brilho azul marinho apenas ao jogador da vez
+    if (corAtiva === 'white') {
+        document.querySelector('.bottom-panel').classList.add('active');
+    } else {
+        document.querySelector('.top-panel').classList.add('active');
+    }
 }
